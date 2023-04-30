@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import config from 'config';
 
 import { app } from './app';
+import { prisma } from './lib';
 import { logger } from './utils';
 
 dotenv.config();
@@ -15,6 +16,11 @@ const NODE_ENV = config.get<string>('NODE_ENV');
 
 async function main(): Promise<void> {
     server = http.createServer(app);
+
+    // connect to the database
+    await prisma.$connect().finally(() => {
+        logger.info(chalk.greenBright.bold.underline('⇨ 💾 Connected to postgres database'));
+    });
 
     try {
         server.listen(PORT, () => {
@@ -29,5 +35,16 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 }
+
+function shutdown(): void {
+    logger.info(chalk.magentaBright.bold.underline('⇨ 🔴 Shutting down server...'));
+    void server.close();
+    prisma.$disconnect().finally(() => {
+        process.exit(0);
+    });
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 void main();

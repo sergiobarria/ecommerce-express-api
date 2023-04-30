@@ -13,12 +13,16 @@
         "typecheck": "tsc --noEmit",
         "check-all": "npm run lint && npm run typecheck",
         "lint-staged": "lint-staged",
+        "db-up": "docker compose up -d",
+        "db-down": "docker compose down",
+        "generate": "npx prisma generate",
         "prepare": "husky install"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@prisma/client": "^4.13.0",
         "bcryptjs": "^2.4.3",
         "chalk": "^4.1.2",
         "config": "^3.3.9",
